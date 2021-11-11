@@ -21,8 +21,15 @@ async function run() {
     try {
         await client.connect()
 
-        console.log('db connected');
+        const database = client.db("flashCorner");
+        const productsCollection = database.collection("products");
 
+
+        app.post('/products', async (req, res) => {
+            const product = req.body;
+            const result = await productsCollection.insertOne(product)
+            res.json(result);
+        })
 
     }
     finally {
