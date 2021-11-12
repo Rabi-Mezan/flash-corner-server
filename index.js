@@ -3,6 +3,7 @@ const app = express()
 const cors = require('cors')
 require('dotenv').config()
 const { MongoClient } = require('mongodb');
+const ObjectId = require('mongodb').ObjectId
 const port = process.env.PORT || 5000;
 
 
@@ -24,11 +25,30 @@ async function run() {
         const database = client.db("flashCorner");
         const productsCollection = database.collection("products");
         const usersCollection = database.collection("users")
+        const orderCollection = database.collection('orders')
 
         // add products api
         app.post('/products', async (req, res) => {
             const product = req.body;
             const result = await productsCollection.insertOne(product)
+            res.json(result);
+        })
+
+
+        // post api for orders
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            const result = await orderCollection.insertOne(order)
+            console.log(result);
+            res.json(result);
+        })
+
+        // get api for orders
+        app.get('/orders/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email }
+            const result = await orderCollection.find(query).toArray()
+            console.log(result);
             res.json(result);
         })
 
@@ -68,6 +88,13 @@ async function run() {
                 isAdmin = true;
             }
             res.json({ admin: isAdmin })
+        })
+
+        app.get('/products/:id', async (req, res) => {
+            const id = req.params.id;
+            const product = { _id: ObjectId(id) }
+            const result = await productsCollection.findOne(product)
+            res.json(result)
         })
 
     }
