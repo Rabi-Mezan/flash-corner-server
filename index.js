@@ -67,6 +67,13 @@ async function run() {
         })
 
 
+        //delete poructs api
+        app.delete('/products/:id', async (req, res) => {
+            const id = req.params.id
+            const result = await productsCollection.deleteOne({ _id: ObjectId(id) })
+            res.send(result);
+        })
+
         // post api for users
         app.post('/users', async (req, res) => {
             const user = req.body
